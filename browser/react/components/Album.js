@@ -5,21 +5,21 @@ class Album extends Component{
 
   constructor(props) {
     super(props);
-
-    console.log('albummmmmmmm',props);
-    const album = props.album;
-    const currentSong = props.currentSong;
-    const isPlaying = props.isPlaying;
-    const toggleOne = props.toggleOne;
+    this.state = {
+      album: {}
+    };
   }
+
   componentDidMount () {
     const albumId = this.props.routeParams.albumId;
     const selectAlbum = this.props.selectAlbum;
 
     selectAlbum(albumId);
 }
-  
+ 
   render(){
+    const album = this.props.selectedAlbum || {};
+
     return (
       <div className="album">
         <div>
@@ -27,13 +27,20 @@ class Album extends Component{
           <img src={ album.imageUrl } className="img-thumbnail" />
         </div>
         <Songs
-          songs={this.album.songs}
-          currentSong={this.currentSong}
-          isPlaying={this.isPlaying}
-          toggleOne={this.toggleOne} />
+          songs={album.songs}
+          currentSong={this.props.currentSong}
+          isPlaying={this.props.isPlaying}
+          toggleOne={this.props.toggleOne} />
       </div>
     );
   }
 }
 
 export default Album;
+
+
+//<Songs
+//          songs={this.state.album.songs}
+//          currentSong={currentSong}
+//          isPlaying={isPlaying}
+//          toggleOne={toggleOne} />

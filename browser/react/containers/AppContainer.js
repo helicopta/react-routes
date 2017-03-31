@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, cloneElement } from 'react';
 import axios from 'axios';
 
 import initialState from '../initialState';
@@ -23,12 +23,21 @@ export default class AppContainer extends Component {
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
     this.deselectAlbum = this.deselectAlbum.bind(this);
+    this.selectArtist = this.selectArtist.bind(this);
   }
 
   componentDidMount () {
     axios.get('/api/albums/')
       .then(res => res.data)
       .then(album => this.onLoad(convertAlbums(album)));
+   
+    //added axios for artists Mauro
+    axios.get('/api/artists')
+      .then(res => res.data)
+      .then(artists => {
+        console.log('artist',artists);
+        this.setState({artists});
+      });
 
     AUDIO.addEventListener('ended', () =>
       this.next());
@@ -98,11 +107,24 @@ export default class AppContainer extends Component {
       }));
   }
 
+  //new function Mauro
+  selectArtist (artistId) {
+    axios.get(`/api/artists/${artistId}`)
+      .then(res => res.data)
+      .then(artist => {
+        console.log('artist',artist);
+        this.setState({
+          selectedArtist: artist
+        });
+      });
+  }
+
   deselectAlbum () {
     this.setState({ selectedAlbum: {}});
   }
 
   render () {
+    console.log('children',this.props.children);
     return (
       <div id="main" className="container-fluid">
         <div className="col-xs-2">
@@ -110,31 +132,19 @@ export default class AppContainer extends Component {
         </div>
         <div className="col-xs-10">
         {
-          this.props.children ?
-            React.cloneElement(this.props.children, {
-            // Album (singular) component's props
+          this.props.children ? React.cloneElement(this.props.children, {
             album: this.state.selectedAlbum,
             currentSong: this.state.currentSong,
             isPlaying: this.state.isPlaying,
-            toggle: this.toggleOne,
-
-            // Albums (plural) component's props
+            toggleOne: this.toggleOne,
             albums: this.state.albums,
-            selectAlbum: this.selectAlbum // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
-          })
-          : null
-
-          //this.state.selectedAlbum.id ?
-          //<Album
-            //album={this.state.selectedAlbum}
-            //currentSong={this.state.currentSong}
-            //isPlaying={this.state.isPlaying}
-            //toggleOne={this.toggleOne}
-          ///> :
-          //<Albums
-          //  albums={this.state.albums}
-          //  selectAlbum={this.selectAlbum}
-          ///>
+            selectAlbum: this.selectAlbum,
+            selectedAlbum: this.state.selectedAlbum,
+            //added artist  Mauro
+            artists: this.state.artists,
+            selectedArtist: this.state.selectedArtist,
+            selectArtist: this.selectArtist
+          }) : null
         }
         </div>
         <Player

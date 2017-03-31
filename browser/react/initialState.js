@@ -4,7 +4,10 @@ const initialState = {
   currentSong: {},
   currentSongList: [],
   isPlaying: false,
-  progress: 0
+  progress: 0,
+  // added artist Mauro
+  artists: [],
+  selectedArtist: {}
 };
 
 export default initialState;
